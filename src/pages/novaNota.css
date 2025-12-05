@@ -1,0 +1,47 @@
+.nova-nota__container { max-width: 900px; margin: 24px auto; padding: 16px; }
+.nova-nota__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.nova-nota__section { display: flex; flex-direction: column; gap: 8px; }
+.nova-nota__assign { margin: 16px 0; display: flex; gap: 12px; align-items: center; }
+.nova-nota__items { margin-top: 12px; }
+.nova-nota__item { display: grid; grid-template-columns: 1.5fr 2fr 0.8fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+.nova-nota__footer { margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+.nova-nota__status { margin-top: 12px; color: #0a0; }
+.nova-nota__offline { margin-top: 8px; color: #a00; }
+.nova-nota-root {
+  max-width: 980px;
+  margin: 8px auto;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 12px;
+  color: #111;
+}
+.titulo { font-size: 22px; margin-bottom: 8px; text-align:center; }
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+.card.small { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.card-title { font-weight:700; margin-bottom:6px; font-size:14px; }
+.input {
+  display:block;
+  width:100%;
+  padding:8px 10px;
+  margin-bottom:8px;
+  font-size:15px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+.input.small { width:48%; }
+.select { padding:8px; font-size:15px; border-radius:6px; }
+.payment-line label { margin-right:12px; font-size:14px; }
+.item-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.item-supplier { width:18%; }
+.item-desc { width:42%; }
+.item-qty { width:8%; }
+.item-price { width:12%; }
+.btn-remove { background:#ff6666; border:none; color:white; padding:6px 8px; border-radius:6px; cursor:pointer; }
+.btn-large { background:#007bff; color:white; padding:10px 14px; border-radius:8px; border:none; font-size:16px; cursor:pointer; }
+.btn-action { background:#28a745; color:white; padding:10px 18px; border-radius:8px; border:none; font-size:16px; cursor:pointer; }
+.btn-secondary { background:#6c757d; color:white; padding:10px 18px; border-radius:8px; border:none; font-size:16px; cursor:pointer; }

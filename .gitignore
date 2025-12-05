@@ -1,0 +1,44 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Vite / build
+dist/
+.vite/
+
+# Electron
+/dist-electron
+/*.asar
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Database and data
+db_data/
+*.sqlite
+
+# Misc
+npm-debug.log
+coverage/
+
+# Optional: ignore local seed script outputs
+seed_admin_custom.log

@@ -1,0 +1,11 @@
+/* src/pages/usuarios.css */
+.usuarios-root{ max-width:980px; margin:8px auto; padding:10px; font-family:Arial,Helvetica,sans-serif; color:#111; }
+.cards{ display:flex; gap:10px; flex-wrap:wrap; }
+.card-user{ background:#fff; border:1px solid #ddd; padding:12px; width:300px; border-radius:8px; }
+.card-title{ font-weight:700; margin-bottom:6px; font-size:16px; }
+.card-row{ font-size:14px; margin-bottom:6px; }
+.card-actions{ display:flex; gap:8px; margin-top:8px; }
+.btn-small{ padding:6px 8px; border-radius:6px; border:none; background:#007bff; color:white; font-size:13px; cursor:pointer; }
+.btn-action{ background:#28a745; color:white; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; margin-right:8px; }
+.btn-secondary{ background:#6c757d; color:white; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; }
+.card{ background:#fff; border:1px solid #ddd; padding:10px; border-radius:6px; }
