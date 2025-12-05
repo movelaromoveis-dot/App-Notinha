@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 
 // suas páginas
@@ -43,8 +43,10 @@ function Layout({ children }) {
 }
 
 export default function App() {
+  console.log('App rendering');
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
 
       <Route
