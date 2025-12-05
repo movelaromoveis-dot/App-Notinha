@@ -13,6 +13,7 @@ import EditarUsuario from "./pages/EditarUsuario";
 import Auditoria from "./pages/Auditoria";
 
 import PrivateRoute from "./components/PrivateRoute";
+import { UpdateNotifier } from "./components/UpdateNotifier";
 
 function Layout({ children }) {
   const { user, logout } = useContext(AuthContext);
@@ -115,6 +116,7 @@ export default function App() {
         }
       />
     </Routes>
+    <UpdateNotifier />
   );
 }
 
