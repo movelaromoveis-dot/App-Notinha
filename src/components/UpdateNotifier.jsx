@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { ipcRenderer } from 'electron'
 
 export function UpdateNotifier() {
   const [updateAvailable, setUpdateAvailable] = useState(false)
@@ -19,18 +18,18 @@ export function UpdateNotifier() {
       setUpdateAvailable(false)
     }
 
-    ipcRenderer?.on('update-available', handleUpdateAvailable)
-    ipcRenderer?.on('update-downloaded', handleUpdateDownloaded)
+    // Use APIs exposed by preload.js instead of importing 'electron' directly
+    window.electron.onUpdateAvailable && window.electron.onUpdateAvailable(handleUpdateAvailable)
+    window.electron.onUpdateDownloaded && window.electron.onUpdateDownloaded(handleUpdateDownloaded)
 
     return () => {
-      ipcRenderer?.removeListener('update-available', handleUpdateAvailable)
-      ipcRenderer?.removeListener('update-downloaded', handleUpdateDownloaded)
+      // no-op: preload's helpers don't expose removeListener in this simple API
     }
   }, [])
 
   const handleInstallUpdate = async () => {
     try {
-      await ipcRenderer?.invoke('install-update')
+      await window.electron?.installUpdate()
     } catch (err) {
       console.error('Failed to install update:', err)
     }
