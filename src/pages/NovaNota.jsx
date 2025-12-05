@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext.jsx';
+import offlineQueue from '../utils/offlineQueue';
+import { startSync, stopSync } from '../utils/syncService';
 import './novaNota.css';
 
 const API = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
   ? import.meta.env.VITE_API_URL
-  : 'http://localhost:4000';
+  : 'http://localhost:4001';
 
 function blankItem() {
   return { supplier_name: '', description: '', qty: 1, unit_price: 0.0 };
@@ -52,14 +54,21 @@ export default function NovaNota({ navigateAfterSave }) {
     }
     fetchSellers();
 
-    const onOnline = () => { setIsOnline(true); syncPendingNotes(); };
+    const onOnline = () => { setIsOnline(true); };
     const onOffline = () => { setIsOnline(false); };
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
-    if (navigator.onLine) syncPendingNotes();
+
+    // start background sync service
+    startSync({ apiUrl: API, onStatusChange: ({ online, syncing, pending }) => {
+      setIsOnline(!!online);
+      if (pending !== undefined) setStatusMsg(syncing ? `Sincronizando ${pending} nota(s)...` : (pending > 0 ? `${pending} notas pendentes.` : ''));
+    }});
+
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
+      stopSync();
     };
     // eslint-disable-next-line
   }, []);
@@ -76,22 +85,24 @@ export default function NovaNota({ navigateAfterSave }) {
   }
 
   async function syncPendingNotes() {
-    const pend = JSON.parse(localStorage.getItem('nf_pending_notes') || '[]');
+    const pend = await offlineQueue.getAllPending();
     if (!pend || pend.length === 0) return;
     if (!navigator.onLine) return;
     setStatusMsg(`Sincronizando ${pend.length} nota(s)...`);
     const headers = { Authorization: `Bearer ${token}` };
-    const still = [];
     for (const p of pend) {
       try {
-        const payload = p.payload || p;
-        await axios.post(`${API}/notes`, payload, { headers });
+        const payload = p.note || p.payload || p;
+        const res = await axios.post(`${API}/notes`, payload, { headers });
+        await offlineQueue.markAsSent(p.id, res.data);
       } catch (err) {
-        still.push(p);
+        // stop on first failure to avoid endless loops
+        console.warn('syncPendingNotes failed for item', p.id, err.message || err);
+        break;
       }
     }
-    localStorage.setItem('nf_pending_notes', JSON.stringify(still));
-    setStatusMsg(still.length === 0 ? 'Todas notas sincronizadas.' : `${still.length} notas ainda pendentes.`);
+    const remaining = await offlineQueue.getAllPending();
+    setStatusMsg(remaining.length === 0 ? 'Todas notas sincronizadas.' : `${remaining.length} notas ainda pendentes.`);
   }
 
   async function saveNote() {
@@ -113,9 +124,7 @@ export default function NovaNota({ navigateAfterSave }) {
     if (payload.items.length === 0) { setStatusMsg('Adicione ao menos 1 item'); setLoading(false); return; }
 
     if (!navigator.onLine) {
-      const pend = JSON.parse(localStorage.getItem('nf_pending_notes') || '[]');
-      pend.push({ id: `local-${Date.now()}`, created_at: new Date().toISOString(), payload, created_by: user?.username || 'local' });
-      localStorage.setItem('nf_pending_notes', JSON.stringify(pend));
+      await offlineQueue.enqueueNote({ payload });
       setStatusMsg('Sem conexão — nota salva localmente e será sincronizada depois.');
       setLoading(false);
       resetForm();
@@ -130,9 +139,7 @@ export default function NovaNota({ navigateAfterSave }) {
       if (typeof navigateAfterSave === 'function') navigateAfterSave();
     } catch (err) {
       setStatusMsg('Erro ao salvar no servidor — salvando localmente.');
-      const pend = JSON.parse(localStorage.getItem('nf_pending_notes') || '[]');
-      pend.push({ id: `local-${Date.now()}`, created_at: new Date().toISOString(), payload, created_by: user?.username || 'local' });
-      localStorage.setItem('nf_pending_notes', JSON.stringify(pend));
+      await offlineQueue.enqueueNote({ payload });
     } finally {
       setLoading(false);
     }
