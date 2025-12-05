@@ -52,23 +52,24 @@ function Layout({ children }) {
 export default function App() {
   console.log('App rendering');
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/*"
-        element={
-          <Layout>
-            <Routes>
-              <Route
-                path="/notas"
-                element={
-                  <PrivateRoute>
-                    <ListaNotas />
-                  </PrivateRoute>
-                }
-              />
+        <Route
+          path="/*"
+          element={
+            <Layout>
+              <Routes>
+                <Route
+                  path="/notas"
+                  element={
+                    <PrivateRoute>
+                      <ListaNotas />
+                    </PrivateRoute>
+                  }
+                />
               <Route
                 path="/notas/nova"
                 element={
@@ -117,6 +118,16 @@ export default function App() {
       />
     </Routes>
     <UpdateNotifier />
+    </>
+  );
+}
+
+export function AppWithUpdater() {
+  return (
+    <>
+      <App />
+      <UpdateNotifier />
+    </>
   );
 }
 
