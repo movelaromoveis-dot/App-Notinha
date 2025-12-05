@@ -1,6 +1,8 @@
 {
   "name": "notafacil-app",
   "version": "0.1.0",
+  "description": "Notafacil - Point of Sale Note Management App",
+  "main": "electron/main.js",
   "private": true,
   "scripts": {
     "dev:web": "vite",
@@ -42,7 +44,13 @@
       "package.json"
     ],
     "win": {
-      "target": ["nsis"]
+      "target": ["nsis"],
+      "certificateFile": null,
+      "certificatePassword": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }
