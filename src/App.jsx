@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
+import { SyncContext } from "./context/SyncContext";
 
 // suas páginas
 import Login from "./pages/Login";
@@ -15,6 +16,7 @@ import PrivateRoute from "./components/PrivateRoute";
 
 function Layout({ children }) {
   const { user, logout } = useContext(AuthContext);
+  const { status } = useContext(SyncContext);
 
   if (!user) return <>{children}</>;
 
@@ -34,7 +36,11 @@ function Layout({ children }) {
           <Link to="/audit">Auditoria</Link>
         )}
 
-        <button onClick={logout}>Sair</button>
+        <div style={{marginTop:8, fontSize:13}}>
+          <div>Status: {status?.online ? 'Online' : 'Offline'} {status?.syncing ? '(Syncing...)' : ''}</div>
+          <div>Pendentes: <b>{status?.pending || 0}</b></div>
+        </div>
+        <button onClick={logout} style={{marginTop:10}}>Sair</button>
       </div>
 
       <div className="content">{children}</div>
