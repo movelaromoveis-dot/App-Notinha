@@ -2,9 +2,6 @@ import React, { useContext } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 
-// importar estilos
-import "./styles/global.css";
-
 // suas páginas
 import Login from "./pages/Login";
 import NovaNota from "./pages/NovaNota";
