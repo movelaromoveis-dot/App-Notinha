@@ -1,6 +1,6 @@
 {
     "name":  "notafacil-app",
-    "version":  "0.2.2",
+    "version":  "0.2.3",
     "description":  "Notafacil - Point of Sale Note Management App",
     "main":  "electron/main.js",
     "private":  true,
