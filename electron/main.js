@@ -1,5 +1,30 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+const { spawn } = require('child_process')
+
+let backendProcess = null
+
+function startBackendIfNeeded() {
+  // Only spawn backend if the packaged app explicitly requests it
+  // Use environment variable INCLUDE_BACKEND=true when building/running
+  if (app.isPackaged && process.env.INCLUDE_BACKEND === 'true') {
+    const backendPath = path.join(process.resourcesPath || __dirname, '..', 'backend', 'server.js')
+    try {
+      backendProcess = spawn(process.execPath, [backendPath], { detached: false, stdio: 'inherit' })
+      backendProcess.on('error', (err) => console.error('Backend process error', err))
+      backendProcess.on('exit', (code) => console.log('Backend exited', code))
+      console.log('Started backend process from', backendPath)
+    } catch (err) {
+      console.error('Failed to start backend process', err)
+    }
+  }
+}
+
+function stopBackendIfRunning() {
+  if (backendProcess && !backendProcess.killed) {
+    try { backendProcess.kill(); } catch (e) { /* ignore */ }
+  }
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -10,15 +35,28 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   })
-  const url = process.env.APP_URL || 'http://localhost:5173'
-  win.loadURL(url)
+  const url = process.env.APP_URL
+  if (app.isPackaged) {
+    // Load the built Vite files from the packaged `dist` folder
+    const indexPath = path.join(__dirname, '..', 'dist', 'index.html')
+    win.loadFile(indexPath).catch(err => {
+      console.error('Failed to load packaged index.html', err)
+    })
+  } else {
+    win.loadURL(url || 'http://localhost:5173')
+  }
 }
 
 app.whenReady().then(() => {
+  startBackendIfNeeded()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+app.on('before-quit', () => {
+  stopBackendIfRunning()
 })
 
 app.on('window-all-closed', () => {
